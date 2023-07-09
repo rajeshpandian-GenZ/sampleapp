@@ -1,0 +1,85 @@
+{
+  "name": "react_native_android_ios_web_electron",
+  "version": "0.0.1",
+  "license": "MIT",
+  "main": "node_modules/expo/AppEntry.js",
+  "scripts": {
+    "start": "expo start",
+    "build": "source .env && NODE_ENV=production && yarn clean && expo export --public-url $EXPO_APP_PUBLIC_URL && mkdir -p dist-public && rm -Rf dist-public/* && cp -R dist/* dist-public/",
+    "serve:dist": "mkdir -p dist-public && (yarn serve -l 5201 dist-public > /dev/null 2>&1 &) && ngrok http 5201",
+    "clean": "rm -Rf dist",
+    "android": "expo start --android",
+    "android:build": "source .env && NODE_ENV=production && yarn build && turtle build:android --keystore-path keystore.jks --keystore-alias $EXPO_ANDROID_KEYSTORE_ALIAS --mode release --type apk --public-url $EXPO_APP_PUBLIC_URL/android-index.json",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "web:build": "NODE_ENV=production && yarn expo-optimize && expo build:web",
+    "electron": "expo-electron start",
+    "electron:build": "yarn electron:build:installer --dir",
+    "electron:build:packed": "source .env && NODE_ENV=production && yarn clean && electron-webpack && electron-builder",
+    "serve:electron:dist": "mkdir -p dist-electron && (yarn serve -l 5202 dist-electron > /dev/null 2>&1 &) && ngrok http 5202",
+    "eject": "expo eject"
+  },
+  "dependencies": {
+    "brew": "^0.0.8",
+    "expo": "~37.0.3",
+    "react": "~16.9.0",
+    "react-dom": "~16.9.0",
+    "react-native": "https://github.com/expo/react-native/archive/sdk-37.0.1.tar.gz",
+    "react-native-screens": "~2.2.0",
+    "react-native-web": "~0.11.7"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.8.6",
+    "@expo/electron-adapter": "^0.0.0-alpha.42",
+    "@expo/webpack-config": "^0.11.18",
+    "@types/react": "~16.9.23",
+    "@types/react-native": "~0.61.17",
+    "babel-preset-expo": "~8.1.0",
+    "electron": "^15.5.5",
+    "electron-builder": "^22.4.1",
+    "electron-log": "^4.1.1",
+    "electron-updater": "^4.2.5",
+    "expo-optimize": "^0.1.16",
+    "serve": "^11.3.0",
+    "sharp-cli": "^1.13.1",
+    "turtle-cli": "^0.14.5",
+    "typescript": "~3.8.3",
+    "webpack": "^4.42.1",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.10.3"
+  },
+  "build": {
+    "appId": "com.yourcompany.${name}",
+    "publish": [
+      {
+        "provider": "generic",
+        "url": "${env.EXPO_ELECTRON_PUBLIC_URL}"
+      }
+    ],
+    "extraMetadata": {
+      "main": "main.js"
+    },
+    "directories": {
+      "buildResources": "assets",
+      "output": "dist-electron"
+    },
+    "files": [
+      {
+        "from": "dist/main/",
+        "to": "./",
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
+        "from": "dist/renderer",
+        "to": "./",
+        "filter": [
+          "**/*"
+        ]
+      },
+      "package.json",
+      "**/node_modules/**/*"
+    ]
+  }
+}
